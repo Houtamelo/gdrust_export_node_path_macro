@@ -45,7 +45,7 @@ pub(crate) fn compile(item: &mut ItemStruct, extends: &Extends) -> TokenStream {
                 return (field, extracted_type, property.export_type);
             }).collect();
 
-    item.attrs.push(parse_quote! { #[derive(gdnative::NativeClass, Default)] });
+    item.attrs.push(parse_quote! { #[derive(gdnative::prelude::NativeClass, Default)] });
     item.attrs.push(parse_quote! { #[inherit(#inherit_type)]});
 
     let impl_block = impl_block::impl_block(&path_fields, &properties, &inherit_type, item);

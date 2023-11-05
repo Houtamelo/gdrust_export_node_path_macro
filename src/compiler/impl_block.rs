@@ -11,7 +11,6 @@ pub(crate) fn impl_block(path_fields: &Vec<(Field, Type, ExportType)>, propertie
 
     return quote! {
         impl #struct_name {
-            #[allow(clippy::default_trait_access)]
             fn new(_owner: &#inherit_type) -> Self {
                 Self {
                     #(#property_inits,)*
