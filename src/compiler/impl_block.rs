@@ -27,7 +27,7 @@ pub(crate) fn impl_block(path_fields: &Vec<(Field, Type, ExportType)>, propertie
 fn grab_nodes_by_path(path_fields: &Vec<(Field, Type, ExportType)>) -> Vec<TokenStream> {
     return path_fields.iter()
             .map(|(field, source_type, export_type)| {
-                let path_field_name = field.ident.as_ref().unwrap().to_string();
+                let path_field_name = field.ident.as_ref().expect(std::panic::Location::caller().to_string().as_str()).to_string();
                 let source_name = path_field_name.replace("path_", "");
 
                 return match export_type {

@@ -5,6 +5,7 @@ use syn::{parenthesized, token, Expr, Field, ItemStruct, Type};
 
 mod kw {
     syn::custom_keyword!(export_node_path);
+    syn::custom_keyword!(export_instance_path);
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -56,9 +57,9 @@ pub fn get_property(item: &mut Field) -> Property {
     let mut property = Property::new(item.ident.as_ref().expect("Properties must be on named field").clone(), item.ty.clone());
 
     item.attrs = item.attrs.iter()
-            .filter(|x| {
-                let ident = x.path.get_ident().expect("Expected valid attr on property").to_string();
-                let tokens = x.tokens.clone().into();
+            .filter(|attr| {
+                let ident = attr.path.get_ident().expect("Expected valid attr on property").to_string();
+                let tokens = attr.tokens.clone().into();
 
                 match ident.as_str() {
                     "default" => {

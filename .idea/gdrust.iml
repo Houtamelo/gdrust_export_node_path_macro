@@ -40,6 +40,7 @@
       <sourceFolder url="file://$MODULE_DIR$/target/debug/build/ryu-c90eccbd98c92524/out" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/debug/build/syn-4a44567782f56b33/out" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/debug/build/winapi-ec0fa0068bddffce/out" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

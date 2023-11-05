@@ -1,10 +1,12 @@
 mod impl_block;
 mod properties;
 
+use proc_macro::TokenTree::Ident;
 use crate::compiler::properties::{ExportType, extract_properties};
 use crate::Extends;
 use proc_macro2::TokenStream;
 use syn::{parse_quote, ItemStruct, Field, Visibility, Type, Fields};
+
 
 pub(crate) fn compile(item: &mut ItemStruct, extends: &Extends) -> TokenStream {
     let mut properties = extract_properties(item);
@@ -15,6 +17,7 @@ pub(crate) fn compile(item: &mut ItemStruct, extends: &Extends) -> TokenStream {
             .filter(|property| property.export_type != ExportType::DoNotExport)
             .map(|property| {
                 let field_name = format!("path_{}", property.name);
+                let field_name = quote::quote!(#field_name);
                 let field = Field {
                     attrs: vec![parse_quote! { #[export] }],
                     vis: Visibility::Inherited,
