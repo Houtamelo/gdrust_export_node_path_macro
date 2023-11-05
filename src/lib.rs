@@ -9,25 +9,22 @@ mod kw {
 }
 
 pub(crate) struct Extends {
-    ty: Type,
+    inherit_type: Type,
 }
 
 impl Parse for Extends {
     fn parse(input: ParseStream) -> Result<Self> {
         let _extends = input.parse::<kw::extends>()?;
         let _eq = input.parse::<Token![=]>()?;
-        let ty = input.parse()?;
-        Ok(Self { ty })
+        let var_type = input.parse()?;
+        Ok(Self { inherit_type: var_type })
     }
 }
 
 #[proc_macro_attribute]
 pub fn gdrust(attr: TokenStream, item: TokenStream) -> TokenStream {
     let mut parsed = syn::parse_macro_input!(item as ItemStruct);
-    let extends = syn::parse_macro_input::parse::<Extends>(attr).unwrap_or(Extends {
-        ty: parse_quote! { gdnative::api::Object },
-    });
+    let extends = syn::parse_macro_input::parse::<Extends>(attr).unwrap_or(Extends { inherit_type: parse_quote! { gdnative::api::Object }, });
     let compiled = compiler::compile(&mut parsed, &extends);
-    // println!("{}", compiled.to_string());
-    compiled.into()
+    return compiled.into();
 }
