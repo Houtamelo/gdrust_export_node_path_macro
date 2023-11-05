@@ -25,7 +25,24 @@ pub(crate) fn compile(item: &mut ItemStruct, extends: &Extends) -> TokenStream {
 
                 fields_named.named.insert(0, field.clone());
 
-                return (field, property.var_type.clone(), property.export_type);
+                let source_type = property.var_type.clone();
+                let extracted_type : Type = match property.export_type {
+                    ExportType::ExportBuiltIn => {
+                        let type_string = (quote::quote! { #source_type }).to_string();
+                        assert!(type_string.starts_with("Option<Ref<") && type_string.ends_with(">>"));
+                        let type_string = type_string.replace("Option<Ref<", "").replace(">>", "");
+                        parse_quote! { #type_string }
+                    },
+                    ExportType::ExportUserScript => {
+                        let type_string = (quote::quote! { #source_type }).to_string();
+                        assert!(type_string.starts_with("Option<Instance<") && type_string.ends_with(">>"));
+                        let type_string = type_string.replace("Option<Instance<", "").replace(">>", "");
+                        parse_quote! { #type_string }
+                    }
+                    ExportType::DoNotExport => unreachable!(),
+                };
+
+                return (field, extracted_type, property.export_type);
             }).collect();
 
     item.attrs.push(parse_quote! { #[derive(gdnative::NativeClass, Default)] });
