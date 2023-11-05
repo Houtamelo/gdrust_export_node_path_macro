@@ -7,10 +7,18 @@ mod kw {
     syn::custom_keyword!(export_node_path);
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum ExportType {
+    DoNotExport,
+    ExportBuiltIn,
+    ExportUserScript
+}
+
+
 pub struct Property {
     pub name: Ident,
     pub var_type: Type,
-    pub should_export_path: bool,
+    pub export_type: ExportType,
     pub default: Option<Expr>,
 }
 
@@ -19,7 +27,7 @@ impl Property {
         Self {
             name,
             var_type,
-            should_export_path: false,
+            export_type: ExportType::DoNotExport,
             default: None,
         }
     }
@@ -59,7 +67,11 @@ pub fn get_property(item: &mut Field) -> Property {
                         return false;
                     }
                     "export_node_path" => {
-                        property.should_export_path = true;
+                        property.export_type = ExportType::ExportBuiltIn;
+                        return false;
+                    },
+                    "export_instance_path" => {
+                        property.export_type = ExportType::ExportUserScript;
                         return false;
                     },
                     _ => return true,

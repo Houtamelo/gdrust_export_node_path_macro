@@ -1,7 +1,7 @@
 mod impl_block;
 mod properties;
 
-use crate::compiler::properties::extract_properties;
+use crate::compiler::properties::{ExportType, extract_properties};
 use crate::Extends;
 use proc_macro2::TokenStream;
 use syn::{parse_quote, ItemStruct, Field, Visibility, Type, Fields};
@@ -11,7 +11,8 @@ pub(crate) fn compile(item: &mut ItemStruct, extends: &Extends) -> TokenStream {
     let inherit_type = &extends.inherit_type;
 
     let Fields::Named(fields_named) = &mut item.fields else { panic!("Expected named fields") };
-    let path_fields : Vec<(Field, Type)> = properties.iter_mut().filter(|property| property.should_export_path)
+    let path_fields : Vec<(Field, Type, ExportType)> = properties.iter_mut()
+            .filter(|property| property.export_type != ExportType::DoNotExport)
             .map(|property| {
                 let field_name = format!("path_{}", property.name);
                 let field = Field {
@@ -24,7 +25,7 @@ pub(crate) fn compile(item: &mut ItemStruct, extends: &Extends) -> TokenStream {
 
                 fields_named.named.insert(0, field.clone());
 
-                return (field, property.var_type.clone());
+                return (field, property.var_type.clone(), property.export_type);
             }).collect();
 
     item.attrs.push(parse_quote! { #[derive(gdnative::NativeClass, Default)] });
