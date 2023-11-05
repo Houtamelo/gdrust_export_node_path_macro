@@ -1,6 +1,6 @@
-use proc_macro::TokenStream;
 mod compiler;
 
+use proc_macro::TokenStream;
 use syn::parse::{Parse, ParseStream};
 use syn::{parse_quote, ItemStruct, Result, Token, Type};
 

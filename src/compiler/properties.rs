@@ -1,7 +1,7 @@
 use proc_macro2::Ident;
 use syn::parse::{Parse, ParseStream, Result};
 use syn::parse_macro_input::parse;
-use syn::{parenthesized, token, Expr, Field, ItemStruct, Type};
+use syn::{parenthesized, Expr, Field, ItemStruct, Type};
 
 mod kw {
     syn::custom_keyword!(export_node_path);
@@ -35,16 +35,15 @@ impl Property {
 }
 
 struct DefaultProperty {
-    pub paren_token: token::Paren,
     pub expr: Expr,
 }
 
 impl Parse for DefaultProperty {
     fn parse(input: ParseStream) -> Result<Self> {
         let content;
-        let paren_token = parenthesized!(content in input);
+        let _ = parenthesized!(content in input);
         let expr = content.parse()?;
-        Ok(Self { paren_token, expr })
+        Ok(Self { expr })
     }
 }
 
@@ -58,7 +57,8 @@ pub fn get_property(item: &mut Field) -> Property {
 
     item.attrs = item.attrs.iter()
             .filter(|attr| {
-                let ident = attr.path.get_ident().expect("Expected valid attr on property").to_string();
+                let Some(ident) = attr.path.get_ident() else { return true };
+                let ident = ident.to_string();
                 let tokens = attr.tokens.clone().into();
 
                 match ident.as_str() {
