@@ -31,7 +31,7 @@ fn grab_nodes_by_path(path_fields: &Vec<(Field, Type)>) -> Vec<TokenStream> {
                 let path_field_name = field.ident.as_ref().unwrap().to_string();
                 let source_name = path_field_name.replace("path_", "");
                 return quote! {
-                    self.#source_name = Some(unsafe { owner.get_node_as::<gdnative::prelude::#source_type>(self.#path_field_name).unwrap().assume_shared() });
+                    self.#source_name = Some(unsafe { owner.get_node_as::<gdnative::prelude::#source_type>(self.#path_field_name.new_ref()).unwrap().assume_shared() });
                 }
             }).collect();
 }
