@@ -1,6 +1,8 @@
 mod impl_block;
 mod properties;
 
+use quote::{quote};
+
 use crate::compiler::properties::{ExportType, extract_properties};
 use crate::Extends;
 use proc_macro2::TokenStream;
@@ -29,7 +31,7 @@ pub(crate) fn compile(item: &mut ItemStruct, extends: &Extends) -> TokenStream {
                 let extracted_type : Type = match property.export_type {
                     ExportType::ExportBuiltIn => {
                         // we expect the type to be Option<Ref<...>> but there could be whitespace between the tokens, but just arbitrarily removing whitespace could lead to issues
-                        let type_string = (quote::quote! { #source_type }).to_string();
+                        let type_string = (quote! { #source_type }).to_string();
 
                         let mut extracted_index_start = 0;
                         let mut extracted_index_end = 0;
@@ -73,7 +75,7 @@ pub(crate) fn compile(item: &mut ItemStruct, extends: &Extends) -> TokenStream {
                     },
                     ExportType::ExportUserScript => {
                         // we expect the type to be Option<Instance<...>> but there could be whitespace between the tokens, but just arbitrarily removing whitespace could lead to issues
-                        let type_string = (quote::quote! { #source_type }).to_string();
+                        let type_string = (quote! { #source_type }).to_string();
 
                         let mut extracted_index_start = 0;
                         let mut extracted_index_end = 0;
@@ -121,12 +123,12 @@ pub(crate) fn compile(item: &mut ItemStruct, extends: &Extends) -> TokenStream {
                 return (field, extracted_type, property.export_type);
             }).collect();
 
-    item.attrs.push(parse_quote! { #[derive(gdnative::prelude::NativeClass, Default)] });
-    item.attrs.push(parse_quote! { #[inherit(#inherit_type)]});
+    item.attrs.insert(0,parse_quote! { #[inherit(#inherit_type)]});
+    item.attrs.insert(0, parse_quote! { #[derive(gdnative::prelude::NativeClass, Default)] });
 
     let impl_block = impl_block::impl_block(&path_fields, &inherit_type, item);
 
-    return quote::quote! {
+    return  quote! {
         #item
 
         #impl_block
