@@ -34,7 +34,7 @@ The base of the implementation was taken from [gdrust](https://github.com/wyattj
 
 ## Usage
 ### Replace
-```
+```rs
 #[derive(NativeClass)]
 #[inherit(Node)]
 struct MyGodotScript {
@@ -97,7 +97,7 @@ impl NativeScriptTest {
 }
 ```
 ### With
-```
+```rs
 #[extends(Node)] // you can replace Node with any other Godot built-in node type
 struct MyGodotScript {
     #[export_path] exported_node: Option<Ref<Node>>,                        // you can replace Node with any other Godot built-in node type
@@ -119,7 +119,7 @@ pub struct NativeScriptTest { }
 ```
 
 ### Which expands to (manually formatted for readability)
-```
+```rs
 #[derive(gdnative::prelude::NativeClass, Default)]
 #[inherit(Node)]
 struct MyGodotScript {
