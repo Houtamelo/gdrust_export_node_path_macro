@@ -1,8 +1,19 @@
 # gdrust_export_node_path_macro
-Export any kind of Godot's Built-in Nodes as NodePath, most of the implementation was taken from the unmaintained gdrust repository: https://github.com/wyattjsmith1/gdrust
+Reduced boilerplate code when acquiring references through `NodePath`.
+
+
+Supports exporting:
+- Option<Ref\<T\>> where T is a Godot's built-in type that inherits `Node` (such as: `Node2D`, `Control`, `ProgressBar`, `KinematicBody`, ...)
+- Vec<Ref\<T\>> where T is a Godot's built-in type that inherits `Node`
+- Option<Instance\<T\>> where T is a custom native script defined by you, as long as the script inherits a Godot's built-in type that inherits `Node`
+- Vec<Instance\<T\>> where T is a custom native script defined by you, as long as the script inherits a Godot's built-in type that inherits `Node`
+
+PS: Note that Vec<Ref\<T\>>/Vec<Instance\<T\>> uses Ref\<T\>/Instance\<T\> directly instead of Option<Ref\<T\>>/Option<Instance\<T\>>
+
+The base of implementation was taken from the unmaintained `gdrust` repository: https://github.com/wyattjsmith1/gdrust
 
 ## Usage
-### Instead of
+### Replace
 ```
 #[derive(NativeClass)]
 #[inherit(Node)]
@@ -65,7 +76,7 @@ impl NativeScriptTest {
     }
 }
 ```
-### Use
+### With
 ```
 #[extends(Node)] // you can replace Node with any other Godot built-in node type
 struct MyGodotScript {
@@ -87,7 +98,7 @@ impl MyGodotScript {
 pub struct NativeScriptTest { }
 ```
 
-### Macro Expansion (manually formatted for readability)
+### Which expands to (manually formatted for readability)
 ```
 #[derive(gdnative::prelude::NativeClass, Default)]
 #[inherit(Node)]
@@ -119,3 +130,8 @@ impl MyGodotScript {
     }
 }
 ```
+## Misc / Limitations
+- You may still freely use the other `gdnative` attributes like `#[register_with]` `#[no_constructor]` `#[user_data]` `#[property]`. Just make sure to always place them bellow `#[extends]`, except `#[property]` which still goes behind fields.
+- `grab_nodes_by_path(&mut self, owner: &Node)` will panic if it fails to validate any of the exported paths.
+- You cannot define your own `Self::new()`.
+- `_owner` in `grab_nodes_by_path(&mut self, owner: &Node)` uses hardcoded `&`, so you cannot declare `owner` in `_ready(&mut self, #[base] _owner: &Node)` as `owner: TRef<Node>`.
