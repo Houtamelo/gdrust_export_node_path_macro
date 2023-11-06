@@ -31,13 +31,27 @@ fn grab_nodes_by_path(path_fields: &Vec<(Field, Type, ExportType)>) -> Vec<Token
 
                 return match export_type {
                     ExportType::DoNotExport => unreachable!(),
-                    ExportType::ExportBuiltIn    => {
+                    ExportType::ExportNode => {
                         let result = format!("self.{source_name} = Some(unsafe {{ owner.get_node_as::<{source_type_ident}>(self.{path_field_name}.new_ref()).unwrap().assume_shared() }});");
-                        parse_str(result.as_str()).expect("Failed to parse result: {result}")
+                        parse_str(result.as_str()).expect(format!("Failed to parse result: {result}").as_str())
                     },
-                    ExportType::ExportUserScript => {
+                    ExportType::ExportInstance => {
                         let result = format!("self.{source_name} = Some(unsafe {{ owner.get_node_as_instance::<{source_type_ident}>(self.{path_field_name}.new_ref()).unwrap().claim() }});");
-                        parse_str(result.as_str()).expect("Failed to parse result: {result}")
+                        parse_str(result.as_str()).expect(format!("Failed to parse result: {result}").as_str())
+                    },
+                    ExportType::ExportNodeVec => {
+                        let result =
+                                format!("for path in self.{path_field_name}.iter() {{
+                                    self.{source_name}.push(unsafe {{ owner.get_node_as::<{source_type_ident}>(path.new_ref()).unwrap().assume_shared() }});
+                                }}");
+                        parse_str(result.as_str()).expect(format!("Failed to parse result: {result}").as_str())
+                    },
+                    ExportType::ExportInstanceVec => {
+                        let result =
+                                format!("for path in self.{path_field_name}.iter() {{
+                                    self.{source_name}.push(unsafe {{ owner.get_node_as_instance::<{source_type_ident}>(path.new_ref()).unwrap().claim() }});
+                                }}");
+                        parse_str(result.as_str()).expect(format!("Failed to parse result: {result}").as_str())
                     },
                 };
             }).collect();
