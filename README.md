@@ -1,16 +1,36 @@
 # gdrust_export_node_path_macro
-Reduced boilerplate code when acquiring references through `NodePath`.
+Reduces boilerplate code when acquiring references through `NodePath`. 
+Usage consists of (full example on a few paragraphs bellow):
+- Replacing `#[derive(NativeClass)] #[inherit(Node)]` with `#[extends(Node)]`
+- Removing the `NodePath` fields marked with `#[property]`
+- Placing `#[export_path]` behind the fields you wish to acquire through `NodePath`
+- Removing your implementation of `fn new(&mut self, _owner: &Node)`
+- Manually call `self.grab_nodes_by_path(_owner);` on your `_ready()` declaration
+
+### The `#[extends]` attribute macro:
+- Replaces itself with `#[derive(NativeClass)] #[inherit(Node)]`
+- Then, for each field marked with `#[export_path]`:
+    - Declares another field of similar name by with a `path_` prefix and `NodePath` as type, as well as a regular `#[property]` attribute. (`Vec<Ref<Node>>` uses a `Vec<NodePath>` type instead)
+    - Example input/output: `#[export_path] node: Option<Ref<Node>>` / `#[property] path_node: NodePath, node: Option<Ref<Node>>,`
+- Declares a impl block with two functions:
+    - `fn grab_nodes_by_path(&mut self, _owner: &Node) {
+        // searches for all the nodes/instances from the NodePath fields generated, assigning each to their original field in self
+      }`
+    - `fn new(_owner: &Node) -> Self { Self::default() }`
+
+### Supports exporting:
+- `Option<Ref<T>>` where T is a Godot's built-in type that inherits `Node` (such as: `Node2D`, `Control`, `ProgressBar`, `KinematicBody`, ...)
+- `Vec<Ref<T>>` where T is a Godot's built-in type that inherits `Node`
+- `Option<Instance<T>>` where T is a custom native script defined by you, as long as the script inherits a Godot's built-in type that inherits `Node`
+- `Vec<Instance<T>>` where T is a custom native script defined by you, as long as the script inherits a Godot's built-in type that inherits `Node`
 
 
-Supports exporting:
-- Option<Ref\<T\>> where T is a Godot's built-in type that inherits `Node` (such as: `Node2D`, `Control`, `ProgressBar`, `KinematicBody`, ...)
-- Vec<Ref\<T\>> where T is a Godot's built-in type that inherits `Node`
-- Option<Instance\<T\>> where T is a custom native script defined by you, as long as the script inherits a Godot's built-in type that inherits `Node`
-- Vec<Instance\<T\>> where T is a custom native script defined by you, as long as the script inherits a Godot's built-in type that inherits `Node`
+PS 1: Note that `Vec<Ref<T>>`/`Vec<Instance<T>>` uses `Ref<T>`/`Instance<T>` directly instead of `Option<Ref<T>>`/`Option<Instance<T>>`
 
-PS: Note that Vec<Ref\<T\>>/Vec<Instance\<T\>> uses Ref\<T\>/Instance\<T\> directly instead of Option<Ref\<T\>>/Option<Instance\<T\>>
 
-The base of implementation was taken from the unmaintained `gdrust` repository: https://github.com/wyattjsmith1/gdrust
+PS 2: Not related to this crate, but to `gdnative-rust` itself: In the editor, `Vec<NodePath>` will be shown as an array of `Variant`, you have to click on each element of the array, chose `NodePath`, then you'll be able to drag nodes in.
+
+The base of the implementation was taken from [gdrust](https://github.com/wyattjsmith1/gdrust).
 
 ## Usage
 ### Replace
