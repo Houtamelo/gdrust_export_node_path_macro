@@ -32,7 +32,7 @@ fn grab_nodes_by_path(path_fields: &Vec<(Field, Type, ExportType)>) -> Vec<Token
                 return match export_type {
                     ExportType::DoNotExport => unreachable!(),
                     ExportType::ExportBuiltIn    => {
-                        let result = format!("self.{source_name} = Some(unsafe {{ owner.get_node_as::<gdnative::prelude::{source_type_ident}>(self.{path_field_name}.new_ref()).unwrap().assume_shared() }});");
+                        let result = format!("self.{source_name} = Some(unsafe {{ owner.get_node_as::<{source_type_ident}>(self.{path_field_name}.new_ref()).unwrap().assume_shared() }});");
                         parse_str(result.as_str()).expect("Failed to parse result: {result}")
                     },
                     ExportType::ExportUserScript => {

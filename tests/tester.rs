@@ -1,10 +1,11 @@
+use gdnative::api::ProgressBar;
 use gdnative::prelude::*;
 use gdrust_export_node_path_macro::extends;
 
 #[extends(Node)]
 #[register_with(Self::register)]
 pub struct MyInstanceTest {
-	#[export_node_path] tested: Option<Ref<Node2D>>,
+	#[export_node_path] tested: Option<Ref<ProgressBar>>,
 	#[export_instance_path] mine: Option<Instance<NativeScriptTest>>,
 }
 
