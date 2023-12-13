@@ -2,13 +2,14 @@
 use crate::compiler::properties::{ExportType};
 use proc_macro2::{TokenStream};
 use quote::{quote};
-use syn::{Field, ItemStruct, parse_quote, parse_str, Type};
+use syn::{Field, ItemStruct, parse, parse_quote, parse_str, Type};
 use crate::Extends;
 
 pub(crate) fn impl_block(path_fields: &Vec<(Field, Type, ExportType)>, extends: &Extends, item: &ItemStruct) -> TokenStream {
     let struct_name = &item.ident;
 
     let grab_nodes_by_path = grab_nodes_by_path(path_fields);
+
 
     return quote! {
         impl #struct_name {
@@ -28,8 +29,9 @@ fn grab_nodes_by_path(path_fields: &Vec<(Field, Type, ExportType)>) -> Vec<Token
             .map(|(field, source_type, export_type)| {
                 let path_field_name = field.ident.as_ref().expect(std::panic::Location::caller().to_string().as_str()).to_string();
                 let source_name = path_field_name.replace("path_", "");
-                let source_type_ident : syn::Ident = parse_quote!(#source_type);
-
+                
+                let source_type_ident = quote!(#source_type);
+                
                 return match export_type {
                     ExportType::DoNotExport => unreachable!(),
                     ExportType::ExportNode => {
