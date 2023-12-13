@@ -2,7 +2,7 @@ use gdnative::api::ProgressBar;
 use gdnative::prelude::*;
 use gdrust_export_node_path_macro::extends;
 
-#[extends(Node)]
+#[extends(gdnative::prelude::Node)]
 #[register_with(Self::register)]
 pub struct MyInstanceTest {
 	#[export_path] tested: Option<Ref<ProgressBar>>,

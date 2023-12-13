@@ -3,19 +3,20 @@ use crate::compiler::properties::{ExportType};
 use proc_macro2::{TokenStream};
 use quote::{quote};
 use syn::{Field, ItemStruct, parse_quote, parse_str, Type};
+use crate::Extends;
 
-pub(crate) fn impl_block(path_fields: &Vec<(Field, Type, ExportType)>, inherit_type: &Type, item: &ItemStruct) -> TokenStream {
+pub(crate) fn impl_block(path_fields: &Vec<(Field, Type, ExportType)>, extends: &Extends, item: &ItemStruct) -> TokenStream {
     let struct_name = &item.ident;
 
     let grab_nodes_by_path = grab_nodes_by_path(path_fields);
 
     return quote! {
         impl #struct_name {
-            fn new(_owner: &#inherit_type) -> Self {
+            fn new(_owner: &#extends) -> Self {
                 Self::default()
             }
 
-            fn grab_nodes_by_path(&mut self, owner: &#inherit_type) {
+            fn grab_nodes_by_path(&mut self, owner: &#extends) {
                 #(#grab_nodes_by_path)*
             }
         }
