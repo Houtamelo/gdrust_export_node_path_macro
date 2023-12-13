@@ -1,7 +1,7 @@
 # gdrust_export_node_path_macro
 Reduces boilerplate code when acquiring references through `NodePath`. 
 Usage consists of (full example on a few paragraphs bellow):
-- Replacing `#[derive(NativeClass)] #[inherit(Node)]` with `#[extends(Node)]`
+- Replacing `#[derive(NativeClass, Default)] #[inherit(Node)]` with `#[extends(Node)]`
 - Removing the `NodePath` fields marked with `#[property]`
 - Placing `#[export_path]` behind the fields you wish to acquire through `NodePath`
 - Removing your implementation of `fn new(&mut self, _owner: &Node)`
@@ -10,7 +10,7 @@ Usage consists of (full example on a few paragraphs bellow):
 ### The `#[extends]` attribute macro:
 - Replaces itself with `#[derive(NativeClass)] #[inherit(Node)]`
 - Then, for each field marked with `#[export_path]`:
-    - Declares another field of similar name by with a `path_` prefix and `NodePath` as type, as well as a regular `#[property]` attribute. (`Vec<Ref<Node>>` uses a `Vec<NodePath>` type instead)
+    - Declares another field of similar name but with a `path_` prefix and `NodePath` as type, as well as a regular `#[property]` attribute. (`Vec<Ref<Node>>` uses a `Vec<NodePath>` type instead)
     - Example input/output: `#[export_path] node: Option<Ref<Node>>` / `#[property] path_node: NodePath, node: Option<Ref<Node>>,`
 - Declares a impl block with two functions:
     - `fn grab_nodes_by_path(&mut self, _owner: &Node) {
