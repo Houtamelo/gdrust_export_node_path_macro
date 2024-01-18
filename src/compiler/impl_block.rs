@@ -2,7 +2,7 @@
 use crate::compiler::properties::{ExportType};
 use proc_macro2::{TokenStream};
 use quote::{quote};
-use syn::{Field, ItemStruct, parse, parse_quote, parse_str, Type};
+use syn::{Field, ItemStruct, parse_str, Type};
 use crate::Extends;
 
 pub(crate) fn impl_block(path_fields: &Vec<(Field, Type, ExportType)>, extends: &Extends, item: &ItemStruct) -> TokenStream {

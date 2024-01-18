@@ -1,17 +1,15 @@
 [package]
-name = "gdrust_export_node_path_macro"
+name = "gdnative_export_node_as_path"
+authors = ["Houtamelo"]
 version = "0.1.2"
 edition = "2021"
-
-keywords = [
-    "godot",
-    "gdnative",
-    "gdrust",
-]
-
-categories = [
-    "game-development",
-]
+license-file = "LICENSE"
+description = "Boilerplate-code replacement macros when exporting node references through NodePath."
+repository = "https://github.com/Houtamelo/gdnative_export_node_macro"
+readme = "README.md"
+keywords = ["godot", "gdnative", "nodepath", "godot-export", "proc-macro"]
+categories = ["game-development", "api-bindings", "development-tools", "rust-patterns"]
+exclude = ["tests/*", "target/*"]
 
 [dependencies]
 proc-macro2 = "1.0.69"
